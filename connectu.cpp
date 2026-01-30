@@ -64,7 +64,11 @@ public:
         if (!current) { cout << "  (No posts yet)" << endl; return; }
         
         while(current != nullptr){
-            current = current->next;
+            cout << "  > [ID: " << current->postId << "] @" 
+                 << current->userId << ": " << current->content 
+                 << " (" << current->likes << " likes) (" << current->timestamp << ")" 
+                 << endl;
+            current = current->next;  
         }
         // Task: Traverse the linked list and print content
         // TODO: LAB 1
@@ -85,6 +89,7 @@ struct BSTNode {
 
 class FriendBST {
 public:
+
     BSTNode* root;
     FriendBST() : root(nullptr) {}
 
