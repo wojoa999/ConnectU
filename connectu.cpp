@@ -58,7 +58,7 @@ public:
         newPost->next = head; 
         head = newPost; 
     }
-
+    // Task: Traverse the linked list and print content
     void printTimeline() {
         Post* current = head;
         if (!current) { cout << "  (No posts yet)" << endl; return; }
@@ -70,9 +70,6 @@ public:
                  << endl;
             current = current->next;  
         }
-        // Task: Traverse the linked list and print content
-        // TODO: LAB 1
-
     }
 };
 
@@ -473,7 +470,7 @@ void showMainMenu() {
         else if (choice == 3) {
             // SAFETY: Commented out to prevent data loss on initial run.
             // Students must uncomment this ONLY when Lab 1 is complete.
-            // saveData(); 
+            saveData(); 
             cout << "Goodbye! " << endl;
         }
     }
