@@ -168,9 +168,13 @@ private:
     HashNode** table;
 
     unsigned long hashFunction(string key) {
-        // TODO: LAB 2
-        return 0; 
-    }
+        size_t h = 0;
+        size_t base = 31;
+        for (unsigned char c : key) {
+            h = (h * base + c) % TABLE_SIZE;
+        }
+        return h;
+    } 
 
 public:
     UserMap() {
@@ -178,14 +182,20 @@ public:
         for (int i = 0; i < TABLE_SIZE; i++) table[i] = nullptr;
     }
 
-    void put(string key, User* user) { /* TODO: LAB 2 */ }
+    void put(string key, User* user) { 
+        int index = hashFunction(key);
+        HashNode* newNode = new HashNode(key, user);
+        newNode->next = table[index];
+        table[index] = newNode;
+    }
 
     User* get(string key) {
-        // --- TEMPORARY FALLBACK FOR LAB 1 ---
-        for(User* u : allUsers) {
-            if (u->username == key) return u;
+        int index = hashFunction(key);
+        HashNode* current = table[index];
+        while (current != nullptr) {
+            if (current->key == key) return current->value;
+            current = current->next;
         }
-        // TODO: LAB 2 - REPLACE ABOVE WITH HASH LOOKUP
         return nullptr;
     }
 };
