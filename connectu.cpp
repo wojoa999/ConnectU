@@ -42,7 +42,10 @@ struct Post {
         
     // TODO: LAB 3 - Implement Scoring Logic
     double getScore() {
-        return 0.0; 
+        double score = 0.0;
+        double hoursOld = (time(0) - timestamp) / 3600.0;
+        score = (likes * 10) + (1000/ (hoursOld + 1));
+        return score; 
     }
 };
 
@@ -142,13 +145,62 @@ private:
     Post* heap[1000]; 
     int size;
 
-    void heapifyDown(int index) { /* TODO: LAB 3 */ }
-    void heapifyUp(int index) { /* TODO: LAB 3 */ }
+    void heapifyDown(int index) { 
+        while(2 * index + 1 < size){
+            int left = 2 * index + 1;
+            int right = 2 * index + 2;
+            int largest = index;
+
+            if(left < size && heap[left]->getScore() > heap[largest]->getScore())
+                largest = left;
+            if(right < size && heap[right]->getScore() > heap[largest]->getScore())
+                largest = right;
+
+            if(largest != index){
+                swap(heap[index], heap[largest]);
+                index = largest;
+            } else {
+                break; 
+            }
+        } 
+    }
+    void heapifyUp(int index) {
+        while (index > 0) {
+            int parent = (index - 1) / 2;
+            if (heap[index]->getScore() > heap[parent]->getScore()) {
+                swap(heap[index], heap[parent]);
+                index = parent;
+            } else {
+                break; 
+            }
+        }
+          
+    }
 
 public:
     FeedHeap() : size(0) {}
-    void push(Post* p) { /* TODO: LAB 3 */ }
-    Post* popMax() { return nullptr; /* TODO: LAB 3 */ }
+
+    void push(Post* p) { 
+        if(size >= 1000) return;
+
+        heap[size] = p;
+        size++;
+        heapifyUp(size - 1);     
+    }
+
+    Post* popMax() { 
+        if(size == 0) return nullptr;
+
+        Post* maxPost = heap[0];
+        heap[0] = heap[size - 1];
+        size--;
+
+        if(size > 0){
+            heapifyDown(0);
+        }
+        
+        return maxPost;
+    }
     bool isEmpty() { return size == 0; }
 };
 
@@ -192,8 +244,8 @@ public:
     User* get(string key) {
         int index = hashFunction(key);
         HashNode* current = table[index];
-        while (current != nullptr) {
-            if (current->key == key) return current->value;
+        while (current != nullptr) { 
+            if (current->key == key) return current->value; 
             current = current->next;
         }
         return nullptr;
@@ -480,7 +532,7 @@ void showMainMenu() {
         else if (choice == 3) {
             // SAFETY: Commented out to prevent data loss on initial run.
             // Students must uncomment this ONLY when Lab 1 is complete.
-            saveData(); 
+            // saveData(); 
             cout << "Goodbye! " << endl;
         }
     }
