@@ -333,7 +333,33 @@ void addFriendship(User* requester, User* target) {
 // TODO: LAB 5 - Breadth First Search
 void recommendFriends(User* startUser) {
     cout << "\n[GRAPH ANALYSIS] Finding friends of friends..." << endl;
-    // TODO: LAB 5
+    
+    std::queue<User*> toVisit;  // BFS Queue
+    std::set<int> visited;  // Track visited user IDs to avoid cycles 
+
+    visited.insert(startUser->userId); // Mark starting user as visited
+
+    for (User* friendPtr : startUser->friends) {   // Iterate direct friends
+        visited.insert(friendPtr->userId);  // Mark friends as visited
+        toVisit.push(friendPtr); // Add friends to queue for BFS
+    }
+
+    bool found = false;  // Mark as no recommendations found yet
+    while (!toVisit.empty()) {  // BFS Loop
+        User* current = toVisit.front(); // Get next user to explore
+        toVisit.pop(); // Remove from queue
+
+        for (User* connection : current->friends) {  // Check friends of current friend
+            if (visited.find(connection->userId) == visited.end()) {  //If not visited
+                cout << " > Recommendation: " << connection->username << " (Connection through " << current->username << ")" << endl;  // Print recommendation
+                visited.insert(connection->userId);  // Mark as visited to prevent duplicates
+                found = true;  // Mark as found
+            }
+        }
+    }
+    if (!found) {  // No recommendations found
+        cout << "No new recommendations found at this time." << endl;
+    }
 }
 
 // ==========================================
