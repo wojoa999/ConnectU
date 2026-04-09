@@ -42,10 +42,10 @@ struct Post {
         
     // TODO: LAB 3 - Implement Scoring Logic
     double getScore() {
-        double score = 0.0;
-        double hoursOld = (time(0) - timestamp) / 3600.0;
-        score = (likes * 10) + (1000/ (hoursOld + 1));
-        return score; 
+        double score = 0.0;  // Base score from likes
+        double hoursOld = (time(0) - timestamp) / 3600.0;  // Age of post in hours
+        score = (likes * 10) + (1000/ (hoursOld + 1));  // Scoring formula
+        return score; // Return the calculated score for this post
     }
 };
 
@@ -57,21 +57,21 @@ public:
 
     // Task: Add a new post to the FRONT of the list (O(1))
     void addPost(int pid, int uid, string content, int likes, long time) {
-        Post* newPost = new Post(pid, uid, content, likes, time); 
-        newPost->next = head; 
-        head = newPost; 
+        Post* newPost = new Post(pid, uid, content, likes, time);  // Create new post node  
+        newPost->next = head; // Point new post to current head
+        head = newPost; // Update head to new post
     }
     // Task: Traverse the linked list and print content
     void printTimeline() {
-        Post* current = head;
-        if (!current) { cout << "  (No posts yet)" << endl; return; }
+        Post* current = head;  // Start at head of list
+        if (!current) { cout << "  (No posts yet)" << endl; return; }  // If list is empty, print message and return
         
-        while(current != nullptr){
+        while(current != nullptr){  // Traverse until end of list
             cout << "  > [ID: " << current->postId << "] @" 
                  << current->userId << ": " << current->content 
                  << " (" << current->likes << " likes) (" << current->timestamp << ")" 
-                 << endl;
-            current = current->next;  
+                 << endl;  // Print current post details
+            current = current->next;  // Move to next post
         }
     }
 };
@@ -132,24 +132,24 @@ public:
 
 // BST Implementation
 BSTNode* FriendBST::insert(BSTNode* node, User* u) {
-    if (node == nullptr) {
-        return new BSTNode(u);
+    if (node == nullptr) {  // If the node is empty
+        return new BSTNode(u);  // Create a new node with the user and return it
     }
 
-    if (u->username < node->user->username) {
-        node->left = insert(node->left, u);
-    } else if (u->username > node->user->username) {
-        node->right = insert(node->right, u);
+    if (u->username < node->user->username) {  // If the new user's username is less than the current node's username
+        node->left = insert(node->left, u);  // Recursively insert into the left subtree    
+    } else if (u->username > node->user->username) {  // If the new user's username is greater than the current node's username
+        node->right = insert(node->right, u);  // Recursively insert into the right subtree 
     }
 
-    return node;
+    return node;  // Return the unchanged node pointer after insertion  
 }
 void FriendBST::printInOrder(BSTNode* node) {
-    if (node == nullptr) return;
+    if (node == nullptr) return;  // If the node is empty, return
 
-    printInOrder(node->left);
-    cout << "  @" << node->user->username << endl;
-    printInOrder(node->right);
+    printInOrder(node->left);  // Traverse left subtree
+    cout << "  @" << node->user->username << endl;  // Print the username of the current node
+    printInOrder(node->right);  // Traverse right subtree
 }
 
 // TODO: LAB 3 - Max Heap
@@ -159,32 +159,32 @@ private:
     int size;
 
     void heapifyDown(int index) { 
-        while(2 * index + 1 < size){
-            int left = 2 * index + 1;
-            int right = 2 * index + 2;
-            int largest = index;
+        while(2 * index + 1 < size){  // While there is at least a left child
+            int left = 2 * index + 1;  // Left child index
+            int right = 2 * index + 2;  // Right child index
+            int largest = index;  // Assume current index is largest
 
-            if(left < size && heap[left]->getScore() > heap[largest]->getScore())
-                largest = left;
-            if(right < size && heap[right]->getScore() > heap[largest]->getScore())
-                largest = right;
+            if(left < size && heap[left]->getScore() > heap[largest]->getScore()) // If left child exists and is greater than current largest
+                largest = left;  // Update largest to left child index
+            if(right < size && heap[right]->getScore() > heap[largest]->getScore()) // If right child exists and is greater than current largest
+                largest = right;  // Update largest to right child index
 
-            if(largest != index){
-                swap(heap[index], heap[largest]);
-                index = largest;
+            if(largest != index){  // If largest is not current index
+                swap(heap[index], heap[largest]);  // Swap current index with largest child
+                index = largest;  // Move down to largest index and continue heapifying
             } else {
-                break; 
+                break; // Break out of loop if heap property is satisfied
             }
         } 
     }
     void heapifyUp(int index) {
-        while (index > 0) {
-            int parent = (index - 1) / 2;
-            if (heap[index]->getScore() > heap[parent]->getScore()) {
-                swap(heap[index], heap[parent]);
-                index = parent;
+        while (index > 0) {  // While not at root
+            int parent = (index - 1) / 2;  // Calculate parent index    
+            if (heap[index]->getScore() > heap[parent]->getScore()) {  // If current node is greater than parent
+                swap(heap[index], heap[parent]); // Swap current node with parent
+                index = parent;  // Move up to parent index and continue heapifying
             } else {
-                break; 
+                break; // Break out of loop if heap property is satisfied
             }
         }
           
@@ -194,25 +194,25 @@ public:
     FeedHeap() : size(0) {}
 
     void push(Post* p) { 
-        if(size >= 1000) return;
+        if(size >= 1000) return;  // Safety check to prevent overflow
 
-        heap[size] = p;
-        size++;
-        heapifyUp(size - 1);     
+        heap[size] = p;  // Add new post to end of heap
+        size++;  // Increase size of heap
+        heapifyUp(size - 1);  // Restore heap property by bubbling new post up to correct position   
     }
 
     Post* popMax() { 
-        if(size == 0) return nullptr;
+        if(size == 0) return nullptr;  // If heap is empty, return nullptr
 
-        Post* maxPost = heap[0];
-        heap[0] = heap[size - 1];
-        size--;
+        Post* maxPost = heap[0];  // Store max post
+        heap[0] = heap[size - 1];  // Move last post to root
+        size--;  // Decrease size of heap
 
         if(size > 0){
-            heapifyDown(0);
+            heapifyDown(0);  // Restore heap property
         }
         
-        return maxPost;
+        return maxPost;  // Return the max post that was removed from heap
     }
     bool isEmpty() { return size == 0; }
 };
@@ -229,16 +229,16 @@ struct HashNode {
 
 class UserMap {
 private:
-    static const int TABLE_SIZE = 10007; 
-    HashNode** table;
+    static const int TABLE_SIZE = 10007; // Size of the has table
+    HashNode** table;  // Array of pointers to HashNode
 
     unsigned long hashFunction(string key) {
-        size_t h = 0;
-        size_t base = 31;
-        for (unsigned char c : key) {
-            h = (h * base + c) % TABLE_SIZE;
+        size_t h = 0;  // Initialize hash value
+        size_t base = 31;  // A common prime base for string hashing
+        for (unsigned char c : key) {  // Iterate over each character in the string
+            h = (h * base + c) % TABLE_SIZE;  // Update hash value using polynomial rolling hash method
         }
-        return h;
+        return h;  // Simple polynomial rolling hash function
     } 
 
 public:
@@ -248,20 +248,20 @@ public:
     }
 
     void put(string key, User* user) { 
-        int index = hashFunction(key);
-        HashNode* newNode = new HashNode(key, user);
-        newNode->next = table[index];
-        table[index] = newNode;
+        int index = hashFunction(key);  // Get index from hash function
+        HashNode* newNode = new HashNode(key, user);  // Create new hash node with key and user pointer
+        newNode->next = table[index];  // Insert at head of linked list for collision resolution (chaining)
+        table[index] = newNode;  // Update head of list to new node
     }
 
     User* get(string key) {
-        int index = hashFunction(key);
-        HashNode* current = table[index];
-        while (current != nullptr) { 
-            if (current->key == key) return current->value; 
-            current = current->next;
+        int index = hashFunction(key);  // Get index from hash function
+        HashNode* current = table[index];  // Start at head of linked list at that index
+        while (current != nullptr) {  // Traverse linked list to find matching key
+            if (current->key == key) return current->value;  // If the key matches, return the current user pointer 
+            current = current->next;  // Move to next node in list
         }
-        return nullptr;
+        return nullptr;  // If key not found, return nullptr
     }
 };
 
